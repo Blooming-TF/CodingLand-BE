@@ -1,0 +1,5 @@
+rootProject.name = 'codingland'
+include 'common'
+include 'domain'
+include 'security'
+include 'api-service'
