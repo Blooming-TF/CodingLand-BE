@@ -49,11 +49,11 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/swagger-ui/**").permitAll()
-//                        .requestMatchers("/api-docs").permitAll()
-//                        .requestMatchers("/v1/users/login/**").permitAll()
-                                .requestMatchers("/v1/api/**").authenticated()
-                                .anyRequest().permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/api-docs").permitAll()
+                        .requestMatchers("/v1/users/login/**").permitAll()
+                        .requestMatchers("/v1/api/**").authenticated()
+                        .anyRequest().permitAll()
                 );
 
         // 세션 사용 안함
