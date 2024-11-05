@@ -31,6 +31,13 @@ jobs:
           echo "${{ secrets.APPLICATION_OAUTH }}" > ./application-oauth.yml
         shell: bash
 
+      - name: make application-redis yml file
+        run: |
+          cd ./security/src/main/resources
+          touch ./application-redis.yml
+          echo "${{ secrets.APPLICATION_REDIS }}" > ./application-redis.yml
+        shell: bash
+
       - name: Gradlew 권한 부여
         run: chmod +x ./gradlew
 
