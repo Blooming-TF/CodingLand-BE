@@ -30,20 +30,15 @@ public class Quiz {
     @JoinColumn(name = "DIFFICULTY_ID")
     private Difficulty difficulty;
 
-    @ManyToOne
-    @JoinColumn(name = "ISQUIZCLEARED_ID")
-    private IsQuizCleared isQuizcleared;
-
     @Builder
     public Quiz(String question, String answer, QuizTypeEnum type, String title, Chapter chapter,
-                Difficulty difficulty, IsQuizCleared isQuizcleared) {
+                Difficulty difficulty) {
         this.question = question;
         this.answer = answer;
         this.type = type;
         this.title = title;
         this.chapter = chapter;
         this.difficulty = difficulty;
-        this.isQuizcleared = isQuizcleared;
     }
 
     public void updateQuizByDto(RequestEditQuizDto requestEditQuizDto, Chapter chapter, Difficulty difficulty) {
@@ -60,9 +55,5 @@ public class Quiz {
         this.question = requestEditQuizDto.question();
         this.type = requestEditQuizDto.type();
         this.title = requestEditQuizDto.title();
-    }
-
-    public void relateIsQuizCleared(IsQuizCleared isQuizCleared) {
-        this.isQuizcleared = isQuizCleared;
     }
 }

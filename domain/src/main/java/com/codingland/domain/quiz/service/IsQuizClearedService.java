@@ -36,9 +36,7 @@ public class IsQuizClearedService {
             Quiz foundQuiz = quizRepository.findById(quiz_id)
                     .orElseThrow(() -> new RuntimeException("임시 Exception"));
             IsQuizCleared newIsQuizCleared = IsQuizCleared.thisProblemIsCleared(foundQuiz, foundUser);
-            IsQuizCleared savedQuizCleared = isQuizClearedRepository.save(newIsQuizCleared);
-            foundQuiz.relateIsQuizCleared(savedQuizCleared);
-            quizRepository.save(foundQuiz);
+            isQuizClearedRepository.save(newIsQuizCleared);
     }
 
     /**

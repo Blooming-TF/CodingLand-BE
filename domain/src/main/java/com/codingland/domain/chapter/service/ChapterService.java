@@ -7,7 +7,11 @@ import com.codingland.domain.chapter.dto.ResponseChapterListDto;
 import com.codingland.domain.chapter.entity.Chapter;
 import com.codingland.domain.chapter.repository.ChapterRepository;
 import com.codingland.domain.quiz.dto.ResponseFindByChapter;
+import com.codingland.domain.quiz.entity.IsQuizCleared;
 import com.codingland.domain.quiz.entity.Quiz;
+import com.codingland.domain.quiz.repository.IsQuizClearedRepository;
+import com.codingland.domain.user.entity.User;
+import com.codingland.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChapterService {
     private final ChapterRepository chapterRepository;
+    private final IsQuizClearedRepository isQuizClearedRepository;
+    private final UserRepository userRepository;
 
     /**
      * 챕터를 등록하는 메서드입니다.
@@ -31,22 +37,29 @@ public class ChapterService {
 
     /**
      * 챕터를 단 건 조회하는 메서드입니다.
+     * 사용자의 id를 받아, 완료 여부를 함께 조회합니다.
+     *
      * @author 김원정
      * @param chapter_id 챕터의 id
+     * @param user_id 조회될 사용자의 id
      * @throws RuntimeException
      */
-    public ResponseChapterDto getChapter(Long chapter_id) {
+    public ResponseChapterDto getChapter(Long chapter_id, Long user_id) {
         Chapter foundChapter = chapterRepository.findById(chapter_id)
+                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+        User foundUser = userRepository.findById(user_id)
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
         List<ResponseFindByChapter> responseQuizDtoList = new ArrayList<>();
         for (Quiz quiz : foundChapter.getQuizzes()) {
+            IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findByQuizAndUser(quiz, foundUser)
+                            .orElse(null);
             responseQuizDtoList.add(
               ResponseFindByChapter.builder()
                       .quizId(quiz.getId())
-                      .isCleared(quiz.getIsQuizcleared() != null && quiz.getIsQuizcleared().isCleared())
                       .level(quiz.getDifficulty().getLevel())
                       .title(quiz.getTitle())
                       .type(quiz.getType())
+                      .isCleared(foundIsQuizCleared != null && foundIsQuizCleared.isCleared())
                       .build()
             );
         }
@@ -72,7 +85,6 @@ public class ChapterService {
                     responseFindByChapterList.add(
                             ResponseFindByChapter.builder()
                                     .quizId(quiz.getId())
-                                    .isCleared(quiz.getIsQuizcleared().isCleared())
                                     .level(quiz.getDifficulty().getLevel())
                                     .title(quiz.getTitle())
                                     .type(quiz.getType())

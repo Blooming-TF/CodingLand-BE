@@ -20,8 +20,8 @@ public class QuizController {
     }
 
     @GetMapping("/{quiz_id}")
-    public ResponseEntity<ResponseQuizDto> getQuiz(@PathVariable Long quiz_id) {
-        ResponseQuizDto result = quizService.findByOne(quiz_id);
+    public ResponseEntity<ResponseQuizDto> getQuiz(@PathVariable Long quiz_id, @RequestParam Long user_id) {
+        ResponseQuizDto result = quizService.findByOne(quiz_id, user_id);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -31,13 +31,7 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/chapter/{chapter_id}")
-    public ResponseEntity<ResponseFindByChapterListDto> getQuizByChapter(@PathVariable Long chapter_id) {
-        ResponseFindByChapterListDto result = quizService.findQuizzesInChapter(chapter_id);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<Void> editQuiz(@RequestBody RequestEditQuizDto requestEditQuizDto) {
         quizService.editQuiz(requestEditQuizDto);
         return ResponseEntity.status(HttpStatus.OK).body(null);

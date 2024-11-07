@@ -4,10 +4,13 @@ import com.codingland.domain.chapter.entity.Chapter;
 import com.codingland.domain.chapter.repository.ChapterRepository;
 import com.codingland.domain.quiz.dto.*;
 import com.codingland.domain.quiz.entity.Difficulty;
+import com.codingland.domain.quiz.entity.IsQuizCleared;
 import com.codingland.domain.quiz.entity.Quiz;
 import com.codingland.domain.quiz.repository.DifficultyRepository;
 import com.codingland.domain.quiz.repository.IsQuizClearedRepository;
 import com.codingland.domain.quiz.repository.QuizRepository;
+import com.codingland.domain.user.entity.User;
+import com.codingland.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,8 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final ChapterRepository chapterRepository;
     private final DifficultyRepository difficultyRepository;
+    private final IsQuizClearedRepository isQuizClearedRepository;
+    private final UserRepository userRepository;
 
     /**
      * 퀴즈 생성 요청을 처리하는 메서드.
@@ -47,15 +52,21 @@ public class QuizService {
 
     /**
      * 주어진 ID에 해당하는 퀴즈를 조회하여 반환합니다.
+     * 사용자의 ID를 받아 퀴즈 완료 여부를 함께 파악합니다.
      *
      * @author 김원정
      * @param quiz_id 조회할 퀴즈의 ID
+     * @param user_id 완료 여부를 파악할 사용자의 ID
      * @return 조회된 퀴즈 정보를 담은 ResponseFindQuizDto 객체
      * @throws RuntimeException 퀴즈를 찾지 못했을 경우 발생하는 예외
      */
-    public ResponseQuizDto findByOne(Long quiz_id) {
+    public ResponseQuizDto findByOne(Long quiz_id, Long user_id) {
         Quiz foundQuiz = quizRepository.findById(quiz_id)
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
+        User foundUser = userRepository.findById(user_id)
+                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+        IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findByQuizAndUser(foundQuiz, foundUser)
+                .orElse(null);
         return ResponseQuizDto.builder()
                 .quizId(foundQuiz.getId())
                 .chapterId(foundQuiz.getChapter().getId())
@@ -64,7 +75,7 @@ public class QuizService {
                 .title(foundQuiz.getTitle())
                 .type(foundQuiz.getType())
                 .level(foundQuiz.getDifficulty().getLevel())
-                .isCleared(foundQuiz.getIsQuizcleared() != null && foundQuiz.getIsQuizcleared().isCleared())
+                .isCleared(foundIsQuizCleared != null && foundIsQuizCleared.isCleared())
                 .build();
     }
 
@@ -87,40 +98,10 @@ public class QuizService {
                             .answer(quiz.getAnswer())
                             .question(quiz.getQuestion())
                             .level(quiz.getDifficulty().getLevel())
-                            .isCleared(quiz.getIsQuizcleared() != null && quiz.getIsQuizcleared().isCleared())
                             .build()
             );
         }
         return new ResponseQuizListDto(responseQuizDtoList);
-    }
-
-
-    /**
-     * 특정 Chapter에 속한 Quiz들을 조회하는 메서드
-     *
-     * @author 김원정
-     * @param chapterId 조회할 Chapter id
-     * @return Quiz들의 정보가 담긴 ResponseFindByChapter
-     */
-    public ResponseFindByChapterListDto findQuizzesInChapter(Long chapterId) {
-        Chapter foundChapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
-        List<Quiz> quizList = quizRepository.findAll();
-        List<ResponseFindByChapter> responseFindByChapters = new ArrayList<>();
-        for (Quiz quiz : quizList) {
-            if (quiz.getChapter().getId().equals(foundChapter.getId())) {
-                responseFindByChapters.add(
-                        ResponseFindByChapter.builder()
-                                .quizId(quiz.getId())
-                                .title(quiz.getTitle())
-                                .type(quiz.getType())
-                                .level(quiz.getDifficulty().getLevel())
-                                .isCleared(quiz.getIsQuizcleared() != null && quiz.getIsQuizcleared().isCleared())
-                                .build()
-                );
-            }
-        }
-        return new ResponseFindByChapterListDto(responseFindByChapters);
     }
 
     /**
@@ -134,11 +115,7 @@ public class QuizService {
     public void editQuiz(RequestEditQuizDto requestEditQuizDto) {
         Quiz foundQuiz = quizRepository.findById(requestEditQuizDto.quizId())
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
-        Chapter foundChapter = chapterRepository.findById(requestEditQuizDto.chapterId())
-                .orElse(null);
-        Difficulty foundDifficulty = difficultyRepository.findByLevel(requestEditQuizDto.level())
-                .orElse(null);
-        foundQuiz.updateQuizByDto(requestEditQuizDto, foundChapter, foundDifficulty);
+        foundQuiz.updateQuizByDto(requestEditQuizDto);
     }
 
     /**

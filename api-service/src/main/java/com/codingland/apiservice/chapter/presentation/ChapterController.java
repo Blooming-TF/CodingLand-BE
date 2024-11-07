@@ -23,8 +23,8 @@ public class ChapterController {
     }
 
     @GetMapping("/{chapter_id}")
-    public ResponseEntity<ResponseChapterDto> getChapter(@PathVariable Long chapter_id) {
-        ResponseChapterDto result = chapterService.getChapter(chapter_id);
+    public ResponseEntity<ResponseChapterDto> getChapter(@PathVariable Long chapter_id, @RequestParam Long user_id) {
+        ResponseChapterDto result = chapterService.getChapter(chapter_id, user_id);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
