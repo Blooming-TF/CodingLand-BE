@@ -5,7 +5,9 @@ import com.codingland.domain.chapter.dto.RequestEditChapterDto;
 import com.codingland.domain.chapter.dto.ResponseChapterDto;
 import com.codingland.domain.chapter.dto.ResponseChapterListDto;
 import com.codingland.domain.chapter.entity.Chapter;
+import com.codingland.domain.chapter.entity.IsChapterCleared;
 import com.codingland.domain.chapter.repository.ChapterRepository;
+import com.codingland.domain.chapter.repository.IsChapterClearedRepository;
 import com.codingland.domain.quiz.dto.ResponseFindByChapter;
 import com.codingland.domain.quiz.entity.IsQuizCleared;
 import com.codingland.domain.quiz.entity.Quiz;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChapterService {
     private final ChapterRepository chapterRepository;
+    private final IsChapterClearedRepository isChapterClearedRepository;
     private final IsQuizClearedRepository isQuizClearedRepository;
     private final UserRepository userRepository;
 
@@ -49,6 +52,8 @@ public class ChapterService {
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
         User foundUser = userRepository.findById(user_id)
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
+        IsChapterCleared foundIsChapterCleared = isChapterClearedRepository.findByChapterAndUser(foundChapter, foundUser)
+                .orElse(null);
         List<ResponseFindByChapter> responseQuizDtoList = new ArrayList<>();
         for (Quiz quiz : foundChapter.getQuizzes()) {
             IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findByQuizAndUser(quiz, foundUser)
@@ -66,6 +71,7 @@ public class ChapterService {
         return new ResponseChapterDto(
                 foundChapter.getId(),
                 foundChapter.getName(),
+                foundIsChapterCleared != null && foundIsChapterCleared.isCleared(),
                 responseQuizDtoList
         );
     }
@@ -96,6 +102,7 @@ public class ChapterService {
                     new ResponseChapterDto(
                             chapter.getId(),
                             chapter.getName(),
+                            false,
                             responseFindByChapterList
                     )
             );

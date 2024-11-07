@@ -7,6 +7,7 @@ import java.util.List;
 public record ResponseChapterDto(
         Long id,
         String name,
+        boolean isCleared,
         List<ResponseFindByChapter> quizzes
 ) {
 }

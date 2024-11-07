@@ -13,7 +13,6 @@ import org.hibernate.annotations.ColumnDefault;
 public class IsQuizCleared {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ISQUIZCLEARED_ID")
     private Long id;
     @ColumnDefault("false")
     private boolean isCleared;
@@ -34,10 +33,6 @@ public class IsQuizCleared {
 
     public static IsQuizCleared thisProblemIsCleared(Quiz quiz, User user) {
         return new IsQuizCleared(true, quiz, user);
-    }
-
-    public static IsQuizCleared thisProblemIsNotCleared(Quiz quiz, User user) {
-        return new IsQuizCleared(false, quiz, user);
     }
 
     public void editIsQuizCleared(boolean isCleared, Quiz quiz, User user) {
