@@ -11,6 +11,7 @@ public record ResponseQuizDto(
         QuizTypeEnum type,
         String title,
         Long chapterId,
-        int level
+        int level,
+        boolean isCleared
 ){
 }

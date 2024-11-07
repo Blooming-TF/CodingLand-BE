@@ -8,6 +8,7 @@ public record ResponseFindByChapter(
         Long quizId,
         QuizTypeEnum type,
         String title,
-        int level
+        int level,
+        boolean isCleared
 ) {
 }

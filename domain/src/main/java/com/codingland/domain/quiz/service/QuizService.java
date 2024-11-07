@@ -6,7 +6,9 @@ import com.codingland.domain.quiz.dto.*;
 import com.codingland.domain.quiz.entity.Difficulty;
 import com.codingland.domain.quiz.entity.Quiz;
 import com.codingland.domain.quiz.repository.DifficultyRepository;
+import com.codingland.domain.quiz.repository.IsQuizClearedRepository;
 import com.codingland.domain.quiz.repository.QuizRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class QuizService {
      */
     public void createQuiz(RequestCreateQuizDto requestCreateQuizDto) {
         Chapter foundChapter = chapterRepository.findById(requestCreateQuizDto.chapterId())
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("임시 Exception"));
         Difficulty difficulty = difficultyRepository.findByLevel(requestCreateQuizDto.level())
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
         Quiz newQuiz = Quiz.builder()
@@ -62,6 +64,7 @@ public class QuizService {
                 .title(foundQuiz.getTitle())
                 .type(foundQuiz.getType())
                 .level(foundQuiz.getDifficulty().getLevel())
+                .isCleared(foundQuiz.getIsQuizcleared() != null && foundQuiz.getIsQuizcleared().isCleared())
                 .build();
     }
 
@@ -84,6 +87,7 @@ public class QuizService {
                             .answer(quiz.getAnswer())
                             .question(quiz.getQuestion())
                             .level(quiz.getDifficulty().getLevel())
+                            .isCleared(quiz.getIsQuizcleared() != null && quiz.getIsQuizcleared().isCleared())
                             .build()
             );
         }
@@ -111,6 +115,7 @@ public class QuizService {
                                 .title(quiz.getTitle())
                                 .type(quiz.getType())
                                 .level(quiz.getDifficulty().getLevel())
+                                .isCleared(quiz.getIsQuizcleared() != null && quiz.getIsQuizcleared().isCleared())
                                 .build()
                 );
             }
@@ -125,15 +130,15 @@ public class QuizService {
      * @param requestEditQuizDto 수정할 정보를 담고 있는 RequestEditQuizDto
      * @throws RuntimeException
      */
+    @Transactional
     public void editQuiz(RequestEditQuizDto requestEditQuizDto) {
-        Quiz foundQuiz = quizRepository.findById(requestEditQuizDto.chapterId())
+        Quiz foundQuiz = quizRepository.findById(requestEditQuizDto.quizId())
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
         Chapter foundChapter = chapterRepository.findById(requestEditQuizDto.chapterId())
                 .orElse(null);
         Difficulty foundDifficulty = difficultyRepository.findByLevel(requestEditQuizDto.level())
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElse(null);
         foundQuiz.updateQuizByDto(requestEditQuizDto, foundChapter, foundDifficulty);
-        quizRepository.save(foundQuiz);
     }
 
     /**
