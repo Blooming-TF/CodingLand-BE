@@ -4,12 +4,10 @@ import com.codingland.domain.quiz.common.QuizTypeEnum;
 import lombok.Builder;
 
 @Builder
-public record ResponseFindByOneQuizDto(
+public record ResponseFindByChapter(
         Long quizId,
-        String question,
-        String answer,
         QuizTypeEnum type,
         String title,
-        Long chapterId
+        int level
 ) {
 }

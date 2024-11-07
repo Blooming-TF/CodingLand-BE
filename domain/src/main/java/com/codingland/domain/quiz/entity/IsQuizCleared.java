@@ -17,4 +17,14 @@ public class IsQuizCleared {
     @ManyToOne
     @JoinColumn(name = "QUIZ_ID")
     private Quiz quiz;
+
+    public IsQuizCleared(boolean isCleared, Quiz quiz) {
+        this.isCleared = isCleared;
+        this.quiz = quiz;
+    }
+
+    public void editIsQuizCleared(boolean isCleared, Quiz quiz) {
+        this.isCleared = isCleared;
+        this.quiz = quiz;
+    }
 }

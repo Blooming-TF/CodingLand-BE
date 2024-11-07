@@ -2,7 +2,7 @@ package com.codingland.domain.quiz.dto;
 
 import com.codingland.domain.quiz.common.QuizTypeEnum;
 
-public record RequestCreateQuizDto(
+public record RequestEditQuizDto(
         String question,
         String answer,
         QuizTypeEnum type,

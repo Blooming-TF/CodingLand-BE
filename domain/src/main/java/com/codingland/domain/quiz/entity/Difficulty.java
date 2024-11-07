@@ -11,10 +11,16 @@ import lombok.NoArgsConstructor;
 public class Difficulty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "DIFFICULTY_ID")
     private Long id;
-    private int difficulty;
+    @Column(unique = true, nullable = false)
+    private int level;
 
-    @ManyToOne
-    @JoinColumn(name = "QUIZ_ID")
-    private Quiz quiz;
+    public Difficulty(int level) {
+        this.level = level;
+    }
+
+    public void updateDifficulty(int difficulty) {
+        this.level = difficulty;
+    }
 }
