@@ -80,20 +80,13 @@ public class IsQuizClearedService {
      * 퀴즈 완료 여부를 수정하는 메서드입니다.
      * @author 김원정
      * @param isQuizCleared_id 퀴즈 완료 여부 id
-     * @param quiz_id 퀴즈의 id
-     * @param user_id 유저의 id
      * @param is_cleared 완료 여부
      * @throws RuntimeException
      */
-    public void editIsQuizCleared(Long isQuizCleared_id, Long quiz_id, Long user_id, boolean is_cleared) {
+    public void editIsQuizCleared(Long isQuizCleared_id, boolean is_cleared) {
         IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findById(isQuizCleared_id)
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
-        Quiz foundQuiz = quizRepository.findById(quiz_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
-        User foundUser = userRepository.findById(user_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
-
-        foundIsQuizCleared.editIsQuizCleared(is_cleared, foundQuiz, foundUser);
+        foundIsQuizCleared.changeIsQuizCleared(is_cleared);
     }
 
 }

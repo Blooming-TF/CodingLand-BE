@@ -49,10 +49,8 @@ public class IsQuizClearedController {
             (관리자) 퀴즈 완료 여부를 수정합니다.
             """)
     public ResponseEntity<Void> editIsQuizCleared(@PathVariable Long isQuizCleared_id,
-                                                  @RequestParam Long quiz_id,
-                                                  @RequestParam Long user_id,
                                                   @RequestParam boolean isCleared) {
-        isQuizClearedService.editIsQuizCleared(isQuizCleared_id, quiz_id, user_id, isCleared);
+        isQuizClearedService.editIsQuizCleared(isQuizCleared_id, isCleared);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

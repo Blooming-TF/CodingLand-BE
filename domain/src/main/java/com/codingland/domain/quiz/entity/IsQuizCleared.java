@@ -35,9 +35,7 @@ public class IsQuizCleared {
         return new IsQuizCleared(true, quiz, user);
     }
 
-    public void editIsQuizCleared(boolean isCleared, Quiz quiz, User user) {
+    public void changeIsQuizCleared(boolean isCleared) {
         this.isCleared = isCleared;
-        this.quiz = quiz;
-        this.user = user;
     }
 }
