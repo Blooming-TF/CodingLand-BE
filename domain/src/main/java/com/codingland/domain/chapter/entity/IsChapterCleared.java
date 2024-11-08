@@ -34,4 +34,8 @@ public class IsChapterCleared {
     public static IsChapterCleared thisChapterIsCleared(Chapter chapter, User user) {
         return new IsChapterCleared(true, chapter, user);
     }
+
+    public void changeIsCleared(boolean isCleared) {
+        this.isCleared = isCleared;
+    }
 }
