@@ -2,6 +2,8 @@ package com.codingland.domain.quiz.service;
 
 import com.codingland.common.exception.quiz.DifficultyErrorCode;
 import com.codingland.common.exception.quiz.DifficultyException;
+import com.codingland.common.exception.quiz.QuizErrorCode;
+import com.codingland.common.exception.quiz.QuizException;
 import com.codingland.domain.quiz.dto.ResponseDifficultyDto;
 import com.codingland.domain.quiz.dto.ResponseDifficultyListDto;
 import com.codingland.domain.quiz.entity.Difficulty;
@@ -68,13 +70,14 @@ public class DifficultyService {
      * @author 김원정
      * @param difficulty_id 난이도 id
      * @throws DifficultyException 난이도가 존재하지 않을 경우 발생하는 예외입니다.
+     * @throws QuizException 퀴즈에 사용 중인 난이도의 경우(연관관계가 맺어져 있는 경우) 삭제되지 않아 발생하는 예외입니다.
      */
     public void deleteDifficulty(Long difficulty_id) {
         Difficulty foundDifficulty = difficultyRepository.findById(difficulty_id)
                 .orElseThrow(() -> new DifficultyException(DifficultyErrorCode.NOT_FOUND_DIFFICULTY_ERROR));
         List<Quiz> foundQuizzes = quizRepository.findAllByDifficulty(foundDifficulty);
         if (!foundQuizzes.isEmpty()) {
-            throw new RuntimeException("임시 Exception");
+            throw new QuizException(QuizErrorCode.QUIZ_HAS_RELATED_DIFFICULTY);
         }
         difficultyRepository.delete(foundDifficulty);
     }

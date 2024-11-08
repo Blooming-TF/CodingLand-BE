@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum QuizErrorCode implements BaseErrorCode {
     NOT_FOUND_QUIZ_ERROR(HttpStatus.BAD_REQUEST, "2000", "퀴즈 정보가 존재하지 않습니다."),
+    QUIZ_HAS_RELATED_DIFFICULTY(HttpStatus.BAD_REQUEST, "2000", "퀴즈에 사용 중인 난이도 입니다.")
     ;
     private final HttpStatus httpStatus;
     private final String code;
