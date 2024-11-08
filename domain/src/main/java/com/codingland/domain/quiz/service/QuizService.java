@@ -11,7 +11,6 @@ import com.codingland.domain.quiz.repository.IsQuizClearedRepository;
 import com.codingland.domain.quiz.repository.QuizRepository;
 import com.codingland.domain.user.entity.User;
 import com.codingland.domain.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -111,11 +110,20 @@ public class QuizService {
      * @param requestEditQuizDto 수정할 정보를 담고 있는 RequestEditQuizDto
      * @throws RuntimeException
      */
-    @Transactional
     public void editQuiz(RequestEditQuizDto requestEditQuizDto) {
         Quiz foundQuiz = quizRepository.findById(requestEditQuizDto.quizId())
                 .orElseThrow(() -> new RuntimeException("임시 Exception"));
-        foundQuiz.updateQuizByDto(requestEditQuizDto);
+
+        Chapter foundChapter = (requestEditQuizDto.chapterId() != null) ?
+                chapterRepository.findById(requestEditQuizDto.chapterId()).orElse(null) :
+                foundQuiz.getChapter();
+
+        Difficulty foundDifficulty = (requestEditQuizDto.level() != 0) ?
+                difficultyRepository.findByLevel(requestEditQuizDto.level()).orElse(null) :
+                foundQuiz.getDifficulty();
+
+        foundQuiz.updateQuizByDto(requestEditQuizDto, foundChapter, foundDifficulty);
+        quizRepository.save(foundQuiz);
     }
 
     /**

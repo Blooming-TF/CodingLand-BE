@@ -42,18 +42,11 @@ public class Quiz {
     }
 
     public void updateQuizByDto(RequestEditQuizDto requestEditQuizDto, Chapter chapter, Difficulty difficulty) {
-        this.answer = requestEditQuizDto.answer();
-        this.question = requestEditQuizDto.question();
-        this.type = requestEditQuizDto.type();
-        this.title = requestEditQuizDto.title();
-        this.chapter = chapter;
-        this.difficulty = difficulty;
-    }
-
-    public void updateQuizByDto(RequestEditQuizDto requestEditQuizDto) {
-        this.answer = requestEditQuizDto.answer();
-        this.question = requestEditQuizDto.question();
-        this.type = requestEditQuizDto.type();
-        this.title = requestEditQuizDto.title();
+        if (requestEditQuizDto.question() != null) this.question = requestEditQuizDto.question();
+        if (requestEditQuizDto.answer() != null) this.answer = requestEditQuizDto.answer();
+        if (requestEditQuizDto.type() != null) this.type = requestEditQuizDto.type();
+        if (requestEditQuizDto.title() != null) this.title = requestEditQuizDto.title();
+        if (chapter != null) this.chapter = chapter;
+        if (difficulty != null) this.difficulty = difficulty;
     }
 }
