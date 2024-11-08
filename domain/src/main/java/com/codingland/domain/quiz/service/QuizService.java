@@ -1,5 +1,13 @@
 package com.codingland.domain.quiz.service;
 
+import com.codingland.common.exception.chapter.ChapterErrorCode;
+import com.codingland.common.exception.chapter.ChapterException;
+import com.codingland.common.exception.quiz.DifficultyErrorCode;
+import com.codingland.common.exception.quiz.DifficultyException;
+import com.codingland.common.exception.quiz.QuizErrorCode;
+import com.codingland.common.exception.quiz.QuizException;
+import com.codingland.common.exception.user.UserErrorCode;
+import com.codingland.common.exception.user.UserException;
 import com.codingland.domain.chapter.entity.Chapter;
 import com.codingland.domain.chapter.repository.ChapterRepository;
 import com.codingland.domain.quiz.dto.*;
@@ -31,13 +39,14 @@ public class QuizService {
      *
      * @author 김원정
      * @param requestCreateQuizDto 퀴즈 생성 요청 DTO
-     * @throws RuntimeException
+     * @throws ChapterException 챕터가 존재하지 않을 경우 발생하는 예외입니다.
+     * @throws DifficultyException 난이도가 존재하지 않을 경우 발생하는 예외입니다.
      */
     public void createQuiz(RequestCreateQuizDto requestCreateQuizDto) {
         Chapter foundChapter = chapterRepository.findById(requestCreateQuizDto.chapterId())
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new ChapterException(ChapterErrorCode.NOT_FOUND_CHAPTER_ERROR));
         Difficulty difficulty = difficultyRepository.findByLevel(requestCreateQuizDto.level())
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new DifficultyException(DifficultyErrorCode.NOT_FOUND_DIFFICULTY_ERROR));
         Quiz newQuiz = Quiz.builder()
                 .type(requestCreateQuizDto.type())
                 .title(requestCreateQuizDto.title())
@@ -57,13 +66,14 @@ public class QuizService {
      * @param quiz_id 조회할 퀴즈의 ID
      * @param user_id 완료 여부를 파악할 사용자의 ID
      * @return 조회된 퀴즈 정보를 담은 ResponseFindQuizDto 객체
-     * @throws RuntimeException 퀴즈를 찾지 못했을 경우 발생하는 예외
+     * @throws QuizException 퀴즈를 찾지 못했을 경우 발생하는 예외
+     * @throws UserException 유저를 찾지 못했을 경우 발생하는 예외입니다.
      */
     public ResponseQuizDto findByOne(Long quiz_id, Long user_id) {
         Quiz foundQuiz = quizRepository.findById(quiz_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new QuizException(QuizErrorCode.NOT_FOUND_QUIZ_ERROR));
         User foundUser = userRepository.findById(user_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new UserException(UserErrorCode.No_USER_INFO));
         IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findByQuizAndUser(foundQuiz, foundUser)
                 .orElse(null);
         return ResponseQuizDto.builder()
@@ -108,11 +118,11 @@ public class QuizService {
      *
      * @author 김원정
      * @param requestEditQuizDto 수정할 정보를 담고 있는 RequestEditQuizDto
-     * @throws RuntimeException
+     * @throws QuizException 퀴즈를 찾지 못했을 때 발생하는 예외입니다.
      */
     public void editQuiz(RequestEditQuizDto requestEditQuizDto) {
         Quiz foundQuiz = quizRepository.findById(requestEditQuizDto.quizId())
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new QuizException(QuizErrorCode.NOT_FOUND_QUIZ_ERROR));
 
         Chapter foundChapter = (requestEditQuizDto.chapterId() != null) ?
                 chapterRepository.findById(requestEditQuizDto.chapterId()).orElse(null) :
@@ -131,11 +141,11 @@ public class QuizService {
      *
      * @author 김원정
      * @param quiz_id 삭제하고 싶은 quiz의 id
-     * @throws RuntimeException
+     * @throws QuizException 퀴즈를 찾지 못했을 때 발생하는 예외입니다.
      */
     public void deleteQuiz(Long quiz_id) {
         Quiz foundQuiz = quizRepository.findById(quiz_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new QuizException(QuizErrorCode.NOT_FOUND_QUIZ_ERROR));
         quizRepository.delete(foundQuiz);
     }
 }
