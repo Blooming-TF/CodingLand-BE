@@ -1,5 +1,11 @@
 package com.codingland.domain.chapter.service;
 
+import com.codingland.common.exception.chapter.ChapterErrorCode;
+import com.codingland.common.exception.chapter.ChapterException;
+import com.codingland.common.exception.chapter.IsChapterClearedErrorCode;
+import com.codingland.common.exception.chapter.IsChapterClearedException;
+import com.codingland.common.exception.user.UserErrorCode;
+import com.codingland.common.exception.user.UserException;
 import com.codingland.domain.chapter.dto.ResponseIsChapterClearedDto;
 import com.codingland.domain.chapter.dto.ResponseIsChapterClearedListDto;
 import com.codingland.domain.chapter.entity.Chapter;
@@ -27,13 +33,14 @@ public class IsChapterClearedService {
      * @author 김원정
      * @param chapter_id 챕터의 id
      * @param user_id 유저의 id
-     * @throws RuntimeException
+     * @throws UserException 유저가 존재하지 않을 경우 예외가 발생합니다.
+     * @throws ChapterException 챕터가 존재하지 않을 경우 예외가 발생합니다.
      */
     public void clearedChapter(Long chapter_id, Long user_id) {
         User foundUser = userRepository.findById(user_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new UserException(UserErrorCode.No_USER_INFO));
         Chapter foundChapter = chapterRepository.findById(chapter_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new ChapterException(ChapterErrorCode.NOT_FOUND_CHAPTER_ERROR));
         IsChapterCleared newIsChapterCleared = IsChapterCleared.thisChapterIsCleared(foundChapter, foundUser);
         isChapterClearedRepository.save(newIsChapterCleared);
     }
@@ -42,11 +49,11 @@ public class IsChapterClearedService {
      * 챕터 완료 여부를 단 건 조회하는 메서드입니다.
      * @author 김원정
      * @param isChapterCleared_id 챕터 완료 여부의 id
-     * @throws RuntimeException
+     * @throws IsChapterClearedException 챕터 완료 여부가 존재하지 않을 경우 예외가 발생합니다.
      */
     public ResponseIsChapterClearedDto getIsChapterCleared(Long isChapterCleared_id) {
         IsChapterCleared foundIsChapterCleared = isChapterClearedRepository.findById(isChapterCleared_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new IsChapterClearedException(IsChapterClearedErrorCode.NOT_FOUND_IS_CHAPTER_CLEARED_ERROR));
         return ResponseIsChapterClearedDto.builder()
                 .id(foundIsChapterCleared.getId())
                 .ChapterId(foundIsChapterCleared.getChapter().getId())
@@ -80,12 +87,12 @@ public class IsChapterClearedService {
      * @author 김원정
      * @param isChapterCleared_id 챕터 완료 여부의 id
      * @param isCleared 완료 여부
-     * @throws RuntimeException
+     * @throws IsChapterClearedException 챕터 완료 여부가 존재하지 않을 경우 예외가 발생합니다.
      */
     @Transactional
     public void editIsChapterCleared(Long isChapterCleared_id, boolean isCleared) {
         IsChapterCleared foundIsChapterCleared = isChapterClearedRepository.findById(isChapterCleared_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new IsChapterClearedException(IsChapterClearedErrorCode.NOT_FOUND_IS_CHAPTER_CLEARED_ERROR));
         foundIsChapterCleared.changeIsCleared(isCleared);
     }
 }
