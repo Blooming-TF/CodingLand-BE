@@ -1,20 +1,32 @@
 package com.codingland.security.jwt;
 
 import com.codingland.common.exception.security.SecurityCustomException;
+import com.codingland.common.exception.user.UserErrorCode;
+import com.codingland.common.exception.user.UserException;
+import com.codingland.domain.user.entity.User;
+import com.codingland.domain.user.repository.UserRepository;
+import com.codingland.security.jwt.dto.UserInfoDTO;
 import com.codingland.security.oauth.dto.response.LoginResponse;
 import com.codingland.security.redis.util.RedisUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static com.codingland.common.exception.security.SecurityErrorCode.INVALID_TOKEN;
 import static com.codingland.common.exception.security.SecurityErrorCode.TOKEN_EXPIRED;
@@ -23,23 +35,30 @@ import static com.codingland.common.exception.security.SecurityErrorCode.TOKEN_E
 @Slf4j
 public class JwtUtil {
 
+    private static final String USERNAME = "username";
     private static final String AUTHORITIES_CLAIM_NAME = "auth";
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String AUTHORITIES = "role";
 
     private final SecretKey secretKey;
     private final Long accessExpMs;
     private final Long refreshExpMs;
     private final RedisUtil redisUtil;
 
+    private final UserRepository userRepository;
+
     public JwtUtil(
             @Value("${security.jwt.secret}") String secret,
             @Value("${security.jwt.token.access-expiration-time}") Long access,
             @Value("${security.jwt.token.refresh-expiration-time}") Long refresh,
-            RedisUtil redis) {
+            RedisUtil redis,
+            UserRepository userRepository) {
 
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         accessExpMs = access;
         refreshExpMs = refresh;
         redisUtil = redis;
+        this.userRepository = userRepository;
     }
 
     public String createJwtAccessToken(String email, String subId) {
@@ -79,6 +98,53 @@ public class JwtUtil {
         );
 
         return refreshToken;
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+            return token.substring(BEARER_PREFIX.length());
+        }
+        return null;
+    }
+
+    public Authentication resolveToken(String token) {
+
+        JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
+        Claims claims = jwtParser.parseClaimsJws(token).getBody();
+
+        Collection<SimpleGrantedAuthority> authorities = Stream.of(
+                        String.valueOf(claims.get(AUTHORITIES)).split(","))
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+
+        final User user = findUser(getEmail(token));
+        UserInfoDTO infoDTO = new UserInfoDTO(user.getName(), user.getEmail(), user.getPicture());
+
+        return new UsernamePasswordAuthenticationToken(infoDTO, token, authorities);
+    }
+
+    private User findUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserException(UserErrorCode.No_USER_INFO));
+    }
+
+    public boolean validateToken(String token) {
+        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+            token = token.substring(BEARER_PREFIX.length());
+        }
+
+        try {
+            JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
+            jwtParser.parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            log.warn("[*] Token has expired: {}", e.getMessage());
+            throw new SecurityCustomException(TOKEN_EXPIRED);
+        } catch (SecurityException | MalformedJwtException | IllegalArgumentException | UnsupportedJwtException e) {
+            log.warn("[*] Invalid token: {}", e.getMessage());
+            throw new SecurityCustomException(INVALID_TOKEN);
+        }
     }
 
     public String resolveAccessToken(HttpServletRequest request) {
@@ -140,6 +206,10 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+
+    public String getUsername(String token) {
+        return getClaims(token).get(USERNAME, String.class);
     }
 
     public Long getId(String token) {
