@@ -25,7 +25,8 @@ public class QuizController {
             (관리자용) 퀴즈를 생성할 때 사용합니다. Chapter를 id로 받으나,  아직 Chapter가 없을 경우 null로 두어도 무관합니다.
             level은 difficulty에 등록된 level만 사용할 수 있습니다.
             """)
-    public ApplicationResponse<Void> createQuiz(@RequestBody RequestCreateQuizDto requestCreateQuizDto) {
+    public ApplicationResponse<Void> createQuiz(
+            @RequestBody RequestCreateQuizDto requestCreateQuizDto) {
         quizService.createQuiz(requestCreateQuizDto);
         return ApplicationResponse.ok(null);
     }
@@ -54,7 +55,8 @@ public class QuizController {
     @Operation(summary = "퀴즈 수정", description = """
             (관리자용) 특정 Quiz를 수정하거나 Chapter와의 연관관계를 수정하고 싶을때 사용합니다.
             """)
-    public ApplicationResponse<Void> editQuiz(@RequestBody RequestEditQuizDto requestEditQuizDto) {
+    public ApplicationResponse<Void> editQuiz(
+            @RequestBody RequestEditQuizDto requestEditQuizDto) {
         quizService.editQuiz(requestEditQuizDto);
         return ApplicationResponse.ok(null);
     }
@@ -63,7 +65,8 @@ public class QuizController {
     @Operation(summary = "퀴즈 삭제", description = """
             (관리자용) 퀴즈를 삭제할 때 사용합니다.
             """)
-    public ApplicationResponse<Void> deleteQuiz(@PathVariable Long quiz_id) {
+    public ApplicationResponse<Void> deleteQuiz(
+            @PathVariable Long quiz_id) {
         quizService.deleteQuiz(quiz_id);
         return ApplicationResponse.ok(null);
     }

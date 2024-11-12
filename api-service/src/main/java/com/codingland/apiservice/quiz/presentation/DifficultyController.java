@@ -37,7 +37,9 @@ public class DifficultyController {
     @Operation(summary = "난이도 수정", description = """
             (관리자용) 난이도 수치를 조정할 때 사용합니다.
             """)
-    public ApplicationResponse<Void> editDifficulty(@RequestParam Long difficulty_id, @RequestParam int level) {
+    public ApplicationResponse<Void> editDifficulty(
+            @RequestParam Long difficulty_id,
+            @RequestParam int level) {
         difficultyService.editDifficulty(difficulty_id, level);
         return ApplicationResponse.ok(null);
     }

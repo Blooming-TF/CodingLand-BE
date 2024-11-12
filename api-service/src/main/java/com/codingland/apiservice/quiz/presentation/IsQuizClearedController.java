@@ -5,10 +5,10 @@ import com.codingland.domain.quiz.dto.ResponseIsQuizClearedDto;
 import com.codingland.domain.quiz.dto.ResponseIsQuizClearedListDto;
 import com.codingland.domain.quiz.service.IsQuizClearedService;
 import com.codingland.domain.user.entity.User;
+import com.codingland.security.annotation.UserResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +24,7 @@ public class IsQuizClearedController {
             """)
     public ApplicationResponse<Void> solvedProblem(
             @RequestParam Long quiz_id,
-            @AuthenticationPrincipal User user) {
+            @UserResolver User user) {
         isQuizClearedService.solveProblem(quiz_id, user.getUserId());
         return ApplicationResponse.ok(null);
     }
@@ -33,7 +33,8 @@ public class IsQuizClearedController {
     @Operation(summary = "퀴즈 완료 여부 단 건 조회", description = """
             (관리자) 퀴즈 완료 여부를 단건 조회 합니다.
             """)
-    public ApplicationResponse<ResponseIsQuizClearedDto> getIsQuizCleared(@PathVariable Long isQuizCleared_id) {
+    public ApplicationResponse<ResponseIsQuizClearedDto> getIsQuizCleared(
+            @PathVariable Long isQuizCleared_id) {
         ResponseIsQuizClearedDto result = isQuizClearedService.getIsQuizCleared(isQuizCleared_id);
         return ApplicationResponse.ok(result);
     }
@@ -51,8 +52,9 @@ public class IsQuizClearedController {
     @Operation(summary = "퀴즈 완료 여부 수정", description = """
             (관리자) 퀴즈 완료 여부를 수정합니다.
             """)
-    public ApplicationResponse<Void> editIsQuizCleared(@PathVariable Long isQuizCleared_id,
-                                                       @RequestParam boolean isCleared) {
+    public ApplicationResponse<Void> editIsQuizCleared(
+            @PathVariable Long isQuizCleared_id,
+            @RequestParam boolean isCleared) {
         isQuizClearedService.editIsQuizCleared(isQuizCleared_id, isCleared);
         return ApplicationResponse.ok(null);
     }
