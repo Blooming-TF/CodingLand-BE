@@ -1,15 +1,15 @@
 package com.codingland.apiservice.quiz.presentation;
 
+import com.codingland.common.common.ApplicationResponse;
 import com.codingland.domain.quiz.dto.ResponseDifficultyListDto;
 import com.codingland.domain.quiz.service.DifficultyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import com.codingland.common.common.ApplicationResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/difficulty")
+@RequestMapping("/v1/difficulty")
 @RequiredArgsConstructor
 @Tag(name = "[Difficulty] 난이도 API", description = "난이도 생성, 난이도 조회, 난이도 수정, 난이도 삭제")
 public class DifficultyController {
@@ -50,7 +50,6 @@ public class DifficultyController {
         difficultyService.deleteDifficulty(difficulty_id);
         return ApplicationResponse.ok(null);
     }
-
 
 
 }

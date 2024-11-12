@@ -1,15 +1,20 @@
 package com.codingland.apiservice.quiz.presentation;
 
-import com.codingland.domain.quiz.dto.*;
+import com.codingland.common.common.ApplicationResponse;
+import com.codingland.domain.quiz.dto.RequestCreateQuizDto;
+import com.codingland.domain.quiz.dto.RequestEditQuizDto;
+import com.codingland.domain.quiz.dto.ResponseQuizDto;
+import com.codingland.domain.quiz.dto.ResponseQuizListDto;
 import com.codingland.domain.quiz.service.QuizService;
+import com.codingland.domain.user.entity.User;
+import com.codingland.security.annotation.UserResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import com.codingland.common.common.ApplicationResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/quiz")
+@RequestMapping("/v1/quiz")
 @RequiredArgsConstructor
 @Tag(name = "[Quiz] 문제 API", description = "문제 생성, 문제 조회, 문제 수정, 문제 삭제")
 public class QuizController {
@@ -29,8 +34,10 @@ public class QuizController {
     @Operation(summary = "퀴즈 단 건 조회", description = """
             (사용자용) 퀴즈를 단 건 조회할 때 사용 됩니다.
             """)
-    public ApplicationResponse<ResponseQuizDto> getQuiz(@PathVariable Long quiz_id, @RequestParam Long user_id) {
-        ResponseQuizDto result = quizService.findByOne(quiz_id, user_id);
+    public ApplicationResponse<ResponseQuizDto> getQuiz(
+            @PathVariable Long quiz_id,
+            @UserResolver User user) {
+        ResponseQuizDto result = quizService.findByOne(quiz_id, user.getUserId());
         return ApplicationResponse.ok(result);
     }
 
