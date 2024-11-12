@@ -90,7 +90,7 @@ public class SecurityConfig {
         // Logout Filter
         http
                 .logout(logout -> logout
-                        .logoutUrl("/api/v1/users/logout")
+                        .logoutUrl("/v1/users/logout")
                         .addLogoutHandler(new CustomLogoutHandler(redisUtil, jwtUtil))
                         .logoutSuccessHandler((request, response, authentication)
                                 -> HttpResponseUtil.setSuccessResponse(

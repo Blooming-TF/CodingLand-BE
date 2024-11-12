@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/quiz")
+@RequestMapping("/v1/api/quiz")
 @RequiredArgsConstructor
 @Tag(name = "[Quiz] 문제 API", description = "문제 생성, 문제 조회, 문제 수정, 문제 삭제")
 public class QuizController {

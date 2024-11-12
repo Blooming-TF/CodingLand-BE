@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/difficulty")
+@RequestMapping("/v1/api/difficulty")
 @RequiredArgsConstructor
 @Tag(name = "[Difficulty] 난이도 API", description = "난이도 생성, 난이도 조회, 난이도 수정, 난이도 삭제")
 public class DifficultyController {

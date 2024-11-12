@@ -12,7 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/quizclear")
+@RequestMapping("/v1/api/quizclear")
 @RequiredArgsConstructor
 @Tag(name = "[IsQuizCleared] 문제 완료 여부 API", description = "문제 완료 처리, 문제 완료 여부 조회, 문제 완료 여부 수정, 문제 완료 여부 삭제")
 public class IsQuizClearedController {
