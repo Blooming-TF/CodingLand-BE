@@ -10,7 +10,7 @@ import com.codingland.common.common.ApplicationResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/isChapterCleared")
+@RequestMapping("/v1/api/chapterclear")
 @RequiredArgsConstructor
 @Tag(name = "[IsChapterCleared] 챕터 완료 여부 API", description = "챕터 완료 처리, 챕터 완료 여부 조회, 챕터 완료 여부 수정, 챕터 완료 여부 삭제")
 public class IsChapterClearedController {
