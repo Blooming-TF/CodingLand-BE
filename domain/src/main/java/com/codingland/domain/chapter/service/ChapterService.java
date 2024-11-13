@@ -1,5 +1,9 @@
 package com.codingland.domain.chapter.service;
 
+import com.codingland.common.exception.chapter.ChapterErrorCode;
+import com.codingland.common.exception.chapter.ChapterException;
+import com.codingland.common.exception.user.UserErrorCode;
+import com.codingland.common.exception.user.UserException;
 import com.codingland.domain.chapter.dto.RequestChapterDto;
 import com.codingland.domain.chapter.dto.RequestEditChapterDto;
 import com.codingland.domain.chapter.dto.ResponseChapterDto;
@@ -45,13 +49,14 @@ public class ChapterService {
      * @author 김원정
      * @param chapter_id 챕터의 id
      * @param user_id 조회될 사용자의 id
-     * @throws RuntimeException
+     * @throws UserException 유저가 조회되지 않을 경우 생기는 예외
+     * @throws ChapterException 챕터가 조회되지 않을 경우 생기는 예외
      */
     public ResponseChapterDto getChapter(Long chapter_id, Long user_id) {
         Chapter foundChapter = chapterRepository.findById(chapter_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new ChapterException(ChapterErrorCode.NOT_FOUND_CHAPTER_ERROR));
         User foundUser = userRepository.findById(user_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new UserException(UserErrorCode.No_USER_INFO));
         IsChapterCleared foundIsChapterCleared = isChapterClearedRepository.findByChapterAndUser(foundChapter, foundUser)
                 .orElse(null);
         List<ResponseFindByChapter> responseQuizDtoList = new ArrayList<>();
@@ -79,7 +84,6 @@ public class ChapterService {
     /**
      * 데이터베이스에 등록된 챕터를 모두 조회하는 메서드입니다.
      * @author 김원정
-     * @throws RuntimeException
      */
     public ResponseChapterListDto getChapterList() {
         List<Chapter> foundChapterList = chapterRepository.findAll();
@@ -114,11 +118,11 @@ public class ChapterService {
      * 챕터를 수정하는 메서드입니다.
      * @author 김원정
      * @param chapter_id 챕터의 id
-     * @throws RuntimeException
+     * @throws ChapterException 챕터가 존재하지 않을 경우 생기는 예외
      */
     public void editChapter(Long chapter_id, RequestEditChapterDto requestChapterDto) {
         Chapter foundChapter = chapterRepository.findById(chapter_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new ChapterException(ChapterErrorCode.NOT_FOUND_CHAPTER_ERROR));
         foundChapter.editChapter(requestChapterDto);
         chapterRepository.save(foundChapter);
     }
@@ -127,10 +131,11 @@ public class ChapterService {
      * 챕터 삭제하는 메서드입니다.
      * @author 김원정
      * @param chapter_id 챕터의 id
-     * @throws RuntimeException
+     * @throws ChapterException 챕터가 존재하지 않을 경우 생기는 예외
      */
     public void deleteChapter(Long chapter_id) {
-        Chapter foundChapter = chapterRepository.findById(chapter_id).orElseThrow(() -> new RuntimeException("임시 Exception"));
+        Chapter foundChapter = chapterRepository.findById(chapter_id)
+                .orElseThrow(() -> new ChapterException(ChapterErrorCode.NOT_FOUND_CHAPTER_ERROR));
         chapterRepository.delete(foundChapter);
     }
 }

@@ -1,5 +1,11 @@
 package com.codingland.domain.quiz.service;
 
+import com.codingland.common.exception.quiz.IsQuizClearedErrorCode;
+import com.codingland.common.exception.quiz.IsQuizClearedException;
+import com.codingland.common.exception.quiz.QuizErrorCode;
+import com.codingland.common.exception.quiz.QuizException;
+import com.codingland.common.exception.user.UserErrorCode;
+import com.codingland.common.exception.user.UserException;
 import com.codingland.domain.quiz.dto.ResponseIsQuizClearedDto;
 import com.codingland.domain.quiz.dto.ResponseIsQuizClearedListDto;
 import com.codingland.domain.quiz.entity.IsQuizCleared;
@@ -27,14 +33,15 @@ public class IsQuizClearedService {
      * @author 김원정
      * @param quiz_id 퀴즈 id
      * @param user_id 유저 id
-     * @throws RuntimeException
+     * @throws UserException 유저가 존재하지 않을 경우 발생하는 예외입니다.
+     * @throws QuizException 문제가 존재하지 않을 경우 발생하는 예외입니다.
      */
     @Transactional
     public void solveProblem(Long quiz_id, Long user_id) {
             User foundUser = userRepository.findById(user_id)
-                    .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                    .orElseThrow(() -> new UserException(UserErrorCode.No_USER_INFO));
             Quiz foundQuiz = quizRepository.findById(quiz_id)
-                    .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                    .orElseThrow(() -> new QuizException(QuizErrorCode.NOT_FOUND_QUIZ_ERROR));
             IsQuizCleared newIsQuizCleared = IsQuizCleared.thisProblemIsCleared(foundQuiz, foundUser);
             isQuizClearedRepository.save(newIsQuizCleared);
     }
@@ -43,11 +50,11 @@ public class IsQuizClearedService {
      * 퀴즈 완료 여부를 단 건 조회하는 메서드입니다.
      * @author 김원정
      * @param isQuizCleared_id 퀴즈 완료 여부의 id
-     * @throws RuntimeException
+     * @throws IsQuizClearedException 퀴즈 완료 여부가 존재하지 않을 경우 발생하는 예외입니다.
      */
     public ResponseIsQuizClearedDto getIsQuizCleared(Long isQuizCleared_id) {
         IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findById(isQuizCleared_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new IsQuizClearedException(IsQuizClearedErrorCode.NOT_FOUND_QUIZ_ERROR));
         return new ResponseIsQuizClearedDto(
                 foundIsQuizCleared.getId(),
                 foundIsQuizCleared.getUser().getUserId(),
@@ -81,11 +88,11 @@ public class IsQuizClearedService {
      * @author 김원정
      * @param isQuizCleared_id 퀴즈 완료 여부 id
      * @param is_cleared 완료 여부
-     * @throws RuntimeException
+     * @throws IsQuizClearedException 문제 완료 여부가 존재하지 않을 경우 발생하는 예외입니다.
      */
     public void editIsQuizCleared(Long isQuizCleared_id, boolean is_cleared) {
         IsQuizCleared foundIsQuizCleared = isQuizClearedRepository.findById(isQuizCleared_id)
-                .orElseThrow(() -> new RuntimeException("임시 Exception"));
+                .orElseThrow(() -> new IsQuizClearedException(IsQuizClearedErrorCode.NOT_FOUND_QUIZ_ERROR));
         foundIsQuizCleared.changeIsQuizCleared(is_cleared);
     }
 
