@@ -12,7 +12,7 @@ import com.codingland.common.common.ApplicationResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/chapter")
+@RequestMapping("/v1/api/chapter")
 @RequiredArgsConstructor
 @Tag(name = "[Chapter] 챕터 API", description = "챕터 생성, 챕터 조회, 챕터 이름 수정, 챕터 삭제")
 public class ChapterController {
