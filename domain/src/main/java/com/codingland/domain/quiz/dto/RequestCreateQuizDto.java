@@ -1,12 +1,13 @@
 package com.codingland.domain.quiz.dto;
 
-import com.codingland.domain.quiz.common.QuizTypeEnum;
+
+import java.util.List;
 
 public record RequestCreateQuizDto(
-        String question,
-        String answer,
-        QuizTypeEnum type,
+        List<RequestCreateQuestionDto> questions,
+        List<RequestCreateAnswerDto> answers,
         String title,
+        String message,
         Long chapterId,
         int level
 ) {

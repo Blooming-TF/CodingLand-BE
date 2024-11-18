@@ -4,11 +4,10 @@ import com.codingland.domain.quiz.common.BlockTypeEnum;
 import lombok.Builder;
 
 @Builder
-public record ResponseFindByChapter(
-        Long quizId,
+public record ResponseAnswerDto(
+        Long id,
         BlockTypeEnum type,
-        String title,
-        int level,
-        boolean isCleared
+        String msg,
+        int repeat
 ) {
 }
