@@ -5,6 +5,7 @@ public record RequestEditQuizDto(
         String title,
         Long chapterId,
         String message,
-        int level
+        int level,
+        String hint
 ) {
 }

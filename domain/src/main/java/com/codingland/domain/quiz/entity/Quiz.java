@@ -20,6 +20,7 @@ public class Quiz {
     private Long id;
     private String title;
     private String message;
+    private String hint;
 
     @OneToMany(mappedBy = "quiz")
     private List<Question> questions;
@@ -37,13 +38,14 @@ public class Quiz {
 
     @Builder
     public Quiz(List<Question> questions, List<Answer> answers, String title, Chapter chapter,
-                Difficulty difficulty, String message) {
+                Difficulty difficulty, String message, String hint) {
         this.questions = questions;
         this.answers = answers;
         this.title = title;
         this.chapter = chapter;
         this.difficulty = difficulty;
         this.message = message;
+        this.hint = hint;
     }
 
     public void updateQuizByDto(RequestEditQuizDto requestEditQuizDto, Chapter chapter, Difficulty difficulty) {
@@ -51,5 +53,6 @@ public class Quiz {
         if (requestEditQuizDto.message() != null) this.message = requestEditQuizDto.message();
         if (chapter != null) this.chapter = chapter;
         if (difficulty != null) this.difficulty = difficulty;
+        if (requestEditQuizDto.hint() != null) this.hint = requestEditQuizDto.hint();
     }
 }

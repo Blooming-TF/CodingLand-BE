@@ -9,6 +9,7 @@ public record RequestCreateQuizDto(
         String title,
         String message,
         Long chapterId,
-        int level
+        int level,
+        String hint
 ) {
 }

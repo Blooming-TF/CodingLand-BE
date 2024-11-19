@@ -51,6 +51,7 @@ public class QuizService {
         Quiz newQuiz = Quiz.builder()
                 .title(requestCreateQuizDto.title())
                 .message(requestCreateQuizDto.message())
+                .hint(requestCreateQuizDto.hint())
                 .questions(questionList)
                 .answers(answerList)
                 .chapter(foundChapter)
@@ -133,6 +134,7 @@ public class QuizService {
                 .message(foundQuiz.getMessage())
                 .level(foundQuiz.getDifficulty().getLevel())
                 .isCleared(foundIsQuizCleared != null && foundIsQuizCleared.isCleared())
+                .hint(foundQuiz.getHint())
                 .build();
     }
 
@@ -153,6 +155,7 @@ public class QuizService {
                             .chapterId(quiz.getChapter().getId())
                             .level(quiz.getDifficulty().getLevel())
                             .message(quiz.getMessage())
+                            .hint(quiz.getHint())
                             .build()
             );
         }

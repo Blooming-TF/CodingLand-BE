@@ -15,6 +15,7 @@ public record ResponseQuizDto(
         String message,
         Long chapterId,
         int level,
-        boolean isCleared
+        boolean isCleared,
+        String hint
 ){
 }
