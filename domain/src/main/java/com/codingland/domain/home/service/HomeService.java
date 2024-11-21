@@ -23,20 +23,21 @@ public class HomeService {
     /**
      * 홈을 생성합니다.
      */
+    @Deprecated
     public void createHome() {
         Home home = new Home();
         homeRepository.save(home);
     }
 
     /**
-     * 특정 홈을 단 건 조회합니다.
+     * 사용자의 Home을 단 건 조회합니다.
      *
-     * @param homeId 조회할 홈의 ID
+     * @param user_id 조회할 사용자의 Id
      * @return 홈 정보 DTO
      * @throws HomeException 홈이 존재하지 않을 경우 예외 발생
      */
-    public ResponseHomeDto getHome(Long homeId) {
-        Home foundHome = homeRepository.findById(homeId)
+    public ResponseHomeDto getHome(Long user_id) {
+        Home foundHome = homeRepository.findHomeByUserUserId(user_id)
                 .orElseThrow(() -> new HomeException(HomeErrorCode.NO_HOME_INFO));
 
         return new ResponseHomeDto(
@@ -79,6 +80,7 @@ public class HomeService {
      * @param homeId 수정할 홈의 ID
      * @throws HomeException 홈이 존재하지 않을 경우 예외 발생
      */
+    @Deprecated
     public void editHome(Long homeId,RequestEditHomeDto requestEditHomeDto) {
         Home home = homeRepository.findById(homeId)
                 .orElseThrow(() -> new HomeException(HomeErrorCode.NO_HOME_INFO));

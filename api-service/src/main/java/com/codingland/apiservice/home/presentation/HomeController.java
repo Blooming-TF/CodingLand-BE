@@ -5,6 +5,8 @@ import com.codingland.common.common.ApplicationResponse;
 import com.codingland.domain.home.dto.RequestEditHomeDto;
 import com.codingland.domain.home.dto.*;
 import com.codingland.domain.home.service.HomeService;
+import com.codingland.domain.user.entity.User;
+import com.codingland.security.annotation.UserResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +30,12 @@ public class HomeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @GetMapping("/{home_id}")
+    @GetMapping("/")
     @Operation(summary = "홈 단 건 조회", description = """
-            홈을 단 건 조회합니다.
-            """)
-    public ApplicationResponse<ResponseHomeDto> getHome(@PathVariable Long home_id) {
-        ResponseHomeDto result = homeService.getHome(home_id);
+           (사용자) 사용자의 홈을 단 건 조회합니다.
+           """)
+    public ApplicationResponse<ResponseHomeDto> getHome(@UserResolver User user) {
+        ResponseHomeDto result = homeService.getHome(user.getUserId());
         //return ResponseEntity.status(HttpStatus.OK).body(null);
         return ApplicationResponse.ok(result);
     }
